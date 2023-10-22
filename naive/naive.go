@@ -27,10 +27,10 @@ var _ = (fs.NodeOnAdder)((*inMemoryFS)(nil))
 func handleValue(i string, v interface{}, parent *fs.Inode, ctx context.Context) {
 	var child *fs.Inode
 	if v == nil {
-		embedder := &fs.MemRegularFile{
+		embed := &fs.MemRegularFile{
 			Data: []byte{},
 		}
-		child = parent.NewPersistentInode(ctx, embedder, fs.StableAttr{})
+		child = parent.NewPersistentInode(ctx, embed, fs.StableAttr{})
 		parent.AddChild(i, child, true)
 		return
 	}
@@ -42,20 +42,20 @@ func handleValue(i string, v interface{}, parent *fs.Inode, ctx context.Context)
 		child = parent.NewPersistentInode(ctx, &fs.Inode{}, fs.StableAttr{Mode: syscall.S_IFDIR})
 		handleObject(ctx, child, v.(map[string]interface{}))
 	case reflect.Bool:
-		embedder := &fs.MemRegularFile{
+		embed := &fs.MemRegularFile{
 			Data: []byte(strconv.FormatBool(v.(bool))),
 		}
-		child = parent.NewPersistentInode(ctx, embedder, fs.StableAttr{})
+		child = parent.NewPersistentInode(ctx, embed, fs.StableAttr{})
 	case reflect.String:
-		embedder := &fs.MemRegularFile{
+		embed := &fs.MemRegularFile{
 			Data: []byte(v.(string)),
 		}
-		child = parent.NewPersistentInode(ctx, embedder, fs.StableAttr{})
+		child = parent.NewPersistentInode(ctx, embed, fs.StableAttr{})
 	case reflect.Float64:
-		embedder := &fs.MemRegularFile{
+		embed := &fs.MemRegularFile{
 			Data: []byte(strconv.FormatFloat(v.(float64), 'f', -1, 64)),
 		}
-		child = parent.NewPersistentInode(ctx, embedder, fs.StableAttr{})
+		child = parent.NewPersistentInode(ctx, embed, fs.StableAttr{})
 	}
 	parent.AddChild(i, child, true)
 }
