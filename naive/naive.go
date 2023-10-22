@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
 	"reflect"
 	"strconv"
 	"syscall"
@@ -132,6 +133,14 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+	defer func() {
+		err := server.Unmount()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
 
-	server.Wait()
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
+	<-sig
 }
